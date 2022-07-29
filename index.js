@@ -19,17 +19,6 @@ app.use(cors());
   
 
 
-
-app.get("/Product", (req, res)=>{
-  product.find((error, product)=>{
-    if(error)res.send(400).json(error);
-
-    res.status(200).json(product);
-
-  })
-});
-
-
 app.post('/create-checkout-session', async (req, res) => {
   console.log(req.body);
   const session = await stripe.checkout.sessions.create({
@@ -38,7 +27,7 @@ app.post('/create-checkout-session', async (req, res) => {
       {
         price_data: {
           currency: 'inr',
-          product_data: {
+          product_data: { 
             name: req.body.product_name,
           },
           unit_amount: req.body.price*100,
@@ -47,10 +36,10 @@ app.post('/create-checkout-session', async (req, res) => {
       },
     ],
     mode: 'payment',
-    success_url: 'http://localhost:3000/stripepaymentsuccess',
-    cancel_url: 'http://localhost:3000/stripepaymentcancel',
+    success_url: 'http://localhost:3000/success',
+    cancel_url: 'http://localhost:3000/failed',
   });
-
+console.log(session.status);
   res.send({id: session.id});
 });
 
@@ -109,28 +98,3 @@ app.listen(process.env.PORT || 8080, () => {
 
 
 
-// app.post("/stripe/charge", cors(), async (req, res) => {
-//   console.log("stripe-routes.js 9 | route reached", req.body);
-//   let { amount, id } = req.body;
-//   console.log("stripe-routes.js 10 | amount and id", amount, id);
-//   try {
-//     const payment = await stripe.paymentIntents.create({
-//       amount: amount,
-//       currency: "USD",
-//       description: "Your Company Description",
-//       payment_method: id,
-//       confirm: true,
-//     });
-//     console.log("stripe-routes.js 19 | payment", payment);
-//     res.json({
-//       message: "Payment Successful",
-//       success: true,
-//     });
-//   } catch (error) {
-//     console.log("stripe-routes.js 17 | error", error);
-//     res.json({
-//       message: "Payment Failed",
-//       success: false,
-//     });
-//   }
-// });
